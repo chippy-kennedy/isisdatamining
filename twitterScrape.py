@@ -51,6 +51,20 @@ def main():
 
 		return totalRetweets /  numTweets
 
+	# given a dictionary containing
+	# attackType, attackLocation, perpetrator
+	# returns a list of search terms for twitter
+	def getSearchQueries(fields):
+		searchQueries = []
+
+		# computed terms
+		searchQueries.append(fields['attackType']+' '+fields['attackLocation'])
+		searchQueries.append(fields['attackType']+' '+fields['perpetrator'])
+		searchQueries.append(fields['attackLocation']+' '+fields['perpetrator'])
+		# general terms
+		searchQueres.append('terrorist attack')
+
+		return searchQueries
 
 
 	def insertMetrics(db, dbcursor, attack):
