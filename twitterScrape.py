@@ -60,11 +60,14 @@ def main():
 		print 'size: '+str(numTweets)
 		print 'avg retweets: ' + str(avgRetweets)
 
+		#delay for twitter
+		sleep(10)
+
 		insert_sql = (
-			"INSERT INTO tweetMetrics (search_terms, attack_id, tweet_count, start_date, end_date) "
-			"VALUES (?, ?, ?, ?, ?)"
+			"INSERT INTO tweet_metrics (search_terms, attack_id, tweet_count, avg_retweets, start_date, end_date) "
+			"VALUES (?, ?, ?, ?, ?, ?)"
 		)
-		data = (terms[1], attack, numTweets, startQueryDate, endQueryDate)
+		data = (terms[1], attack, numTweets, avgRetweets, startQueryDate, endQueryDate)
 		try:
 			dbcursor.execute(insert_sql, data)
 		except sqlite3.Error as e:
@@ -85,8 +88,6 @@ def main():
 
 	db.commit()
 	db.close()
-
-
 
 
 if __name__ == '__main__':
