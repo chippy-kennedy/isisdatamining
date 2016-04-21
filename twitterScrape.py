@@ -68,17 +68,17 @@ def main():
 
 	def insertMetrics(db, dbcursor, attack):
 		#run intended twitter query with got lib
-		terms = getFields(dbcursor,attack)
+		fields = getFields(dbcursor,attack)
 
-		start_date = datetime.datetime.strptime(terms['startDate'], "%Y-%m-%d %H:%M:%S")
-		end_date = datetime.datetime.strptime(terms['endDate'], "%Y-%m-%d %H:%M:%S")
+		start_date = datetime.datetime.strptime(fields['startDate'], "%Y-%m-%d %H:%M:%S")
+		end_date = datetime.datetime.strptime(fields['endDate'], "%Y-%m-%d %H:%M:%S")
 		startQueryDate = start_date.strftime('%Y-%m-%d')
 		endQueryDate = (start_date + datetime.timedelta(days=1)).strftime('%Y-%m-%d')
 
 		print startQueryDate
 
-		# #tweetCriteria = got.manager.TweetCriteria().setQuerySearch(terms['searchTerms'])#.setSince(startQueryDate).setUntil(endQueryDate).setMaxTweets(100)
-		# tweetCriteria = got.manager.TweetCriteria().setQuerySearch(terms['searchTerms']).setSince(startQueryDate).setUntil(endQueryDate).setMaxTweets(56)
+		# #tweetCriteria = got.manager.TweetCriteria().setQuerySearch(fields['searchTerms'])#.setSince(startQueryDate).setUntil(endQueryDate).setMaxTweets(100)
+		# tweetCriteria = got.manager.TweetCriteria().setQuerySearch(fields['searchTerms']).setSince(startQueryDate).setUntil(endQueryDate).setMaxTweets(56)
 		# tweets = got.manager.TweetManager.getTweets(tweetCriteria)
 		#
 		# print tweets
@@ -96,7 +96,7 @@ def main():
 		# 	"INSERT INTO tweet_metrics (search_terms, attack_id, tweet_count, avg_retweets, start_date, end_date) "
 		# 	"VALUES (?, ?, ?, ?, ?, ?)"
 		# )
-		# data = (terms['searchTerms'], attack, numTweets, avgRetweets, startQueryDate, endQueryDate)
+		# data = (fields['searchTerms'], attack, numTweets, avgRetweets, startQueryDate, endQueryDate)
 		# try:
 		# 	dbcursor.execute(insert_sql, data)
 		# 	db.commit()
