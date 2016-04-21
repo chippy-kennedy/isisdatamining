@@ -14,7 +14,7 @@ def main():
 		print "Hashtags: %s\n" % t.hashtags
 
 
-	def getSearchTerms(cursor, attack):
+	def getFields(cursor, attack):
 		cursor.execute('SELECT start_date, end_date, type, primary_location, perpetrator FROM attacks WHERE attack_id = ?;', (attack,))
 		allTerms = list(cursor.fetchone())
 
@@ -24,7 +24,7 @@ def main():
 		attackLocation 	= allTerms[3]
 		perpetrator 	= allTerms[4]
 
-		searchTerms = {
+		fields = {
 			'startDate': startDate,
 			'endDate': endDate,
 			'attackType': attackType,
@@ -33,9 +33,9 @@ def main():
 		}
 
 		if attack < 10:
-			print searchTerms
+			print fields
 
-		return searchTerms
+		return fields
 
 	def getAvgRetweets(tweets):
 		numTweets = len(tweets)
@@ -66,10 +66,9 @@ def main():
 
 		return searchQueries
 
-
 	def insertMetrics(db, dbcursor, attack):
 		#run intended twitter query with got lib
-		terms = getSearchTerms(dbcursor,attack)
+		terms = getFields(dbcursor,attack)
 
 		start_date = datetime.datetime.strptime(terms['startDate'], "%Y-%m-%d %H:%M:%S")
 		end_date = datetime.datetime.strptime(terms['endDate'], "%Y-%m-%d %H:%M:%S")
