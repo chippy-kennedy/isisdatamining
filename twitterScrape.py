@@ -20,9 +20,9 @@ def main():
 
 		startDate 		= allTerms[0]
 		endDate 		= allTerms[1]
-		attackType 		= allTerms[2]
-		attackLocation 	= allTerms[3]
-		perpetrator 	= allTerms[4]
+		attackType 		= str(allTerms[2])
+		attackLocation 	= str(allTerms[3])
+		perpetrator 	= str(allTerms[4])
 
 		fields = {
 			'startDate': startDate,
