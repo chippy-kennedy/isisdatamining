@@ -2,5 +2,10 @@ EECS 435 - Final Project
 
 Andrew Hamm & Chippy Kennedy
 
-.
+1. attacks.db - sqlite3 db that maintains terrorist incident information - manually parsed from https://en.wikipedia.org/wiki/List_of_non-state_terrorist_incidents. Also maintains tweetMetrics reletive to each incident. Each attack can have multiple metrics, indexed on the search terms used.
+
+1. twitterScrape.py - checks for any unchecked entries in the attacks database, and generates a tweet metric based on a paramertized query for that attack. Attacks can have multiple tweetmetrics, indexed on the search terms used.
+
+TwitterQuery courtesy of:
+https://github.com/Jefferson-Henrique/GetOldTweets-python
 
