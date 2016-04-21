@@ -32,9 +32,6 @@ def main():
 			'perpetrator': perpetrator,
 		}
 
-		if attack < 10:
-			print fields
-
 		return fields
 
 	def getAvgRetweets(tweets):
@@ -62,7 +59,7 @@ def main():
 		searchQueries.append(fields['attackType']+' '+fields['perpetrator'])
 		searchQueries.append(fields['attackLocation']+' '+fields['perpetrator'])
 		# general terms
-		searchQueres.append('terrorist attack')
+		searchQueries.append('terrorist attack')
 
 		return searchQueries
 
@@ -75,7 +72,10 @@ def main():
 		startQueryDate = start_date.strftime('%Y-%m-%d')
 		endQueryDate = (start_date + datetime.timedelta(days=1)).strftime('%Y-%m-%d')
 
-		print startQueryDate
+		searchQueries = getSearchQueries(fields)
+
+		if attack < 10:
+			print searchQueries
 
 		# #tweetCriteria = got.manager.TweetCriteria().setQuerySearch(fields['searchTerms'])#.setSince(startQueryDate).setUntil(endQueryDate).setMaxTweets(100)
 		# tweetCriteria = got.manager.TweetCriteria().setQuerySearch(fields['searchTerms']).setSince(startQueryDate).setUntil(endQueryDate).setMaxTweets(56)
