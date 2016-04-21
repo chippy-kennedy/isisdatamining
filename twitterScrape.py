@@ -1,7 +1,7 @@
 #https://github.com/Jefferson-Henrique/GetOldTweets-python
 import got
 import sqlite3
-import datetime
+import datetime, time
 
 def main():
 
@@ -38,7 +38,7 @@ def main():
 		return totalRetweets /  numTweets
 
 
-	def insertMetrics(dbcursor, attack):
+	def insertMetrics(db, dbcursor, attack):
 		#run intended twitter query with got lib
 		terms = getSearchTerms(dbcursor,attack)
 
@@ -61,7 +61,7 @@ def main():
 		print 'avg retweets: ' + str(avgRetweets)
 
 		#delay for twitter
-		sleep(10)
+		time.sleep(10)
 
 		insert_sql = (
 			"INSERT INTO tweet_metrics (search_terms, attack_id, tweet_count, avg_retweets, start_date, end_date) "
@@ -70,6 +70,7 @@ def main():
 		data = (terms[1], attack, numTweets, avgRetweets, startQueryDate, endQueryDate)
 		try:
 			dbcursor.execute(insert_sql, data)
+			db.commit()
 		except sqlite3.Error as e:
 			print "Tweet Metrics Not Saved: ", e.args[0]
 
@@ -84,7 +85,7 @@ def main():
 
 	for attack in attackids:
 		aid = attack[0]
-		insertMetrics(dbcursor, aid)
+		insertMetrics(db, dbcursor, aid)
 
 	db.commit()
 	db.close()
