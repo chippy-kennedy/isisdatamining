@@ -6,6 +6,17 @@ import urllib
 from lxml import html
 import requests
 import TwitterRequest as tr
+import ssl
+import urllib3
+import certifi
+
+
+# Handle Web Certificate Approval
+http = urllib3.PoolManager(
+    cert_reqs='CERT_REQUIRED', # Force certificate check.
+    ca_certs=certifi.where(),  # Path to the Certifi bundle.
+)
+
 
 BASEURL = "https://twitter.com/search?"
 SEARCHTERMS = "terrorist bangladesh isil"
@@ -13,8 +24,11 @@ SEARCHTERMS = "terrorist bangladesh isil"
 #q=terrorist%20bangladesh&src=typd&lang=en"
 
 # 1. Setup Twitter Search Query
-query = tr.TwitterRequest(SEARCHTERMS)
-
+request = tr.TwitterRequest(SEARCHTERMS)
+headers = {'User-agent' : 'Mozilla/5.0 (iPad; CPU OS 6_0 like Mac OS X) AppleWebKit/536.26 (KHTML, like Gecko) Version/6.0 Mobile/10A5355d Safari/8536.25'}
+query = request.getURL()
+res = http.get(query)
+response = requests.get(query, headers = headers)
 print query
 
 # 2. Parse Search Results
@@ -22,48 +36,19 @@ tweetCount = 0
 #bool continueSearch = True
 
 #scrape page at hand
-page = requests.get(query)
-tree = html.fromstring(page.content)
-
-
+print response
+tree = html.fromstring(response.content)
 
 #while(continueSearch)
 #  time.sleep(10)	
 
 
 # 3. Save to DB
-db = sqlite3.connect('test.db')
+db = sqlite3.connect('attacks.db')
 dbcursor = db.cursor()
 
 #sql = 'INSERT'
-
-
-
-#Prep a new DB Table
-#tempSQL ='CREATE TABLE Attacks (attackid INTEGER PRIMARY KEY)'
-#baseSQL ='CREATE TABLE TweetMetrics (SearchTerms CHAR(40) PRIMARY KEY,FOREIGN KEY(attackid) REFERENCES attack(attackid),TweetCount INTEGER,StartDate DATE,EndDate DATE'
-
-
-dbcursor.execute(baseSQL)
-
-#response = urllib2.urlopen(searchURL)
-#
-#insertSQL = """#INSERT INTO TWEET-METRICS (AttackID, TweetCount, StartDate, EndDate, SearchTerms)
-#				VALUES (1, 100, 2015-04-12, 2015-06-14, 'terrorist')""" 
-#dbcursor.execute(insertSQL)
-
+#dbcursor.execute(baseSQL)
 
 db.close()
 
-
-
-class TwitterResponse:
-	def __init__(hmi, ih, isr, irr, sc, rc, fri):
-		self.has_more_items = hmi
-		self.items_html = ih
-		self.is_scrolling_req = isr
-		self.is_refresh_req = irr
-		self.scroll_cursor = sc
-		self.refresh_cursor = rc
-		self.focused_refresh_interval = fri
-	 
