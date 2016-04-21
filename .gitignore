@@ -1,2 +1,3 @@
 #twitter oauth vars
 oauth.py
+*.pyc
