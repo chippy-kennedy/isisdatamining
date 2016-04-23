@@ -149,10 +149,11 @@ def insertMetrics(conn, c, attackID):
     if attackID < 10 or attackID == 606 or attackID == 94:
         print searchQueries
 
-    for queryType, query in searchQueries.items():
-        # enter each search term in db separately
-        numTweets, avgRetweets, avgFavorites = searchTwitter(query)
-        addToDB(conn, c, queryType, query, numTweets, avgRetweets, avgFavorites)
+        for queryType, query in searchQueries.items():
+            # enter each search term in db separately
+            numTweets, avgRetweets, avgFavorites = searchTwitter(query)
+            print numTweets, avgRetweets, avgFavorites
+            # addToDB(conn, c, queryType, query, numTweets, avgRetweets, avgFavorites)
 
 
 def main():
