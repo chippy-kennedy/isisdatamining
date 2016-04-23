@@ -146,21 +146,20 @@ def insertMetrics(conn, c, attackID):
 
     searchQueries = getSearchQueries(fields)
 
-    if attackID < 10 or attackID == 606 or attackID == 94:
-        queryCount = 1
-        for queryType, query in searchQueries.items():
-            # generate a unique id based on which search query it is
-            # within the current attack
-            metricID = (attackID-1)*len(searchQueries)+queryCount
-            queryCount+=1
-            print metricID
+    queryCount = 1
+    for queryType, query in searchQueries.items():
+        # generate a unique id based on which search query it is
+        # within the current attack
+        metricID = (attackID-1)*len(searchQueries)+queryCount
+        queryCount+=1
+        print metricID
 
-            print query
-            # enter each search term in db separately
-            numTweets, avgRetweets, avgFavorites = searchTwitter(query, startQueryDate, endQueryDate)
-            print numTweets, avgRetweets, avgFavorites
+        print query
+        # enter each search term in db separately
+        numTweets, avgRetweets, avgFavorites = searchTwitter(query, startQueryDate, endQueryDate)
+        print numTweets, avgRetweets, avgFavorites
 
-            addToDB(conn, c, metricID, attackID, queryType, query, numTweets, avgRetweets, avgFavorites, startQueryDate, endQueryDate)
+        addToDB(conn, c, metricID, attackID, queryType, query, numTweets, avgRetweets, avgFavorites, startQueryDate, endQueryDate)
 
 
 def main():
