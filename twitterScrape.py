@@ -119,13 +119,13 @@ def searchTwitter(query, startQueryDate, endQueryDate):
 
 # adds the given information to the twitter_metrics db
 # returns if the addition was successful
-def addToDB(conn, c, attackID, queryType, query, numTweets, avgRetweets, avgFavorites, startQueryDate, endQueryDate):
+def addToDB(conn, c, metricID, attackID, queryType, query, numTweets, avgRetweets, avgFavorites, startQueryDate, endQueryDate):
     insert_sql = (
-        """INSERT INTO tweet_metrics (attack_id, query_type, query, number_of_tweets, avg_retweets, avg_favorites, query_start, query_end)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?)"""
+        """INSERT INTO tweet_metrics (metric_id, attack_id, query_type, query, number_of_tweets, avg_retweets, avg_favorites, query_start, query_end)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"""
     )
 
-    data = (attackID, queryType, query, numTweets, avgRetweets, avgFavorites, startQueryDate, endQueryDate)
+    data = (metricID, attackID, queryType, query, numTweets, avgRetweets, avgFavorites, startQueryDate, endQueryDate)
 
     try:
         c.execute(insert_sql, data)
@@ -147,13 +147,20 @@ def insertMetrics(conn, c, attackID):
     searchQueries = getSearchQueries(fields)
 
     if attackID < 10 or attackID == 606 or attackID == 94:
-        print attackID
+        queryCount = 1
         for queryType, query in searchQueries.items():
+            # generate a unique id based on which search query it is
+            # within the current attack
+            metricID = (attackID-1)*len(searchQueries)+queryCount
+            queryCount+=1
+            print metricID
+
             print query
             # enter each search term in db separately
             numTweets, avgRetweets, avgFavorites = searchTwitter(query, startQueryDate, endQueryDate)
             print numTweets, avgRetweets, avgFavorites
-            addToDB(conn, c, attackID, queryType, query, numTweets, avgRetweets, avgFavorites)
+
+            addToDB(conn, c, metricID, attackID, queryType, query, numTweets, avgRetweets, avgFavorites)
 
 
 def main():
