@@ -174,8 +174,16 @@ def main():
     c.execute("SELECT attack_id from attacks")
     attackids = c.fetchall()
 
-    num_cores = multiprocessing.cpu_count()
-    Parallel(n_jobs=num_cores)(delayed(processAttack)(conn, c, attack) for attack in attackids)
+    rerunFor = [288, 289, 300, 319, 412, 432, 434, 435, 438, 442, 445, 446, 449, 450]
+
+    for attack in attackids:
+        attackID = attack[0]
+        if attackID not in rerunFor:
+            continue
+        insertMetrics(conn, c, attackID)
+
+    # num_cores = multiprocessing.cpu_count()
+    # Parallel(n_jobs=num_cores)(delayed(processAttack)(conn, c, attack) for attack in attackids)
 
     conn.commit()
     conn.close()
