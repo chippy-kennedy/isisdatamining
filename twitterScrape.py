@@ -157,33 +157,6 @@ def main():
             addToDB(conn, c, queryType, query, numTweets, avgRetweets, avgFavorites)
 
 
-        # # tweetCriteria = got.manager.TweetCriteria().setQuerySearch(fields['searchTerms'])#.setSince(startQueryDate).setUntil(endQueryDate).setMaxTweets(100)
-        # tweetCriteria = got.manager.TweetCriteria().setQuerySearch(fields['searchTerms']).setSince(startQueryDate).setUntil(endQueryDate).setMaxTweets(56)
-        # tweets = got.manager.TweetManager.getTweets(tweetCriteria)
-        #
-        # # print tweets
-        #
-        # numTweets = len(tweets)
-        # avgRetweets = getAvgRetweets(tweets)
-        #
-        # print 'number of tweets: '+str(numTweets)
-        # print 'avg retweets: ' + str(avgRetweets)
-        #
-        # #delay for twitter
-        # time.sleep(10)
-        #
-        # insert_sql = (
-        #     "INSERT INTO tweet_metrics (search_terms, attack_id, tweet_count, avg_retweets, start_date, end_date) "
-        #     "VALUES (?, ?, ?, ?, ?, ?)"
-        # )
-        # data = (fields['searchTerms'], attack, numTweets, avgRetweets, startQueryDate, endQueryDate)
-        # try:
-        #     dbcursor.execute(insert_sql, data)
-        #     db.commit()
-        # except sqlite3.Error as e:
-        #     print "Tweet Metrics Not Saved: ", e.args[0]
-
-
     #MAIN
     conn = sqlite3.connect('attacks.db')
     conn.text_factory = str
