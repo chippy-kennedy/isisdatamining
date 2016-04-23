@@ -39,7 +39,7 @@ def getFields(cursor, attackID):
 def getSharingAverages(tweets):
     numTweets = len(tweets)
     if numTweets <= 0:
-        return None
+        return None,  None
 
     # Pop pulls off first tweet so it doesn't affect average
     firstTweet = tweets.pop(0)
