@@ -160,7 +160,7 @@ def insertMetrics(conn, c, attackID):
             numTweets, avgRetweets, avgFavorites = searchTwitter(query, startQueryDate, endQueryDate)
             print numTweets, avgRetweets, avgFavorites
 
-            addToDB(conn, c, metricID, attackID, queryType, query, numTweets, avgRetweets, avgFavorites)
+            addToDB(conn, c, metricID, attackID, queryType, query, numTweets, avgRetweets, avgFavorites, startQueryDate, endQueryDate)
 
 
 def main():
