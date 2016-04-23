@@ -58,6 +58,11 @@ def main():
             "PKK"   : "Kurdistan Workers' Party OR PKK",
             "ISIS"  : "ISIS OR ISIL OR Islamic State"
         }
+        if perpetrator in extended_name_dict:
+            print perpetrator
+            return extended_name_dict[perpetrator]
+        else:
+            return perpetrator
 
     # given a term converts the commas to OR's
     # this is so twitters search knows to search for either of the terms
