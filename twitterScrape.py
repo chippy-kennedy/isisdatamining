@@ -4,6 +4,8 @@ import got
 import re, sys
 import sqlite3
 import datetime, time
+from joblib import Parallel, delayed
+import multiprocessing
 
 def printTweet(descr, t):
     print descr
@@ -152,6 +154,8 @@ def insertMetrics(conn, c, attackID):
         # within the current attack
         metricID = (attackID-1)*len(searchQueries)+queryCount
         queryCount+=1
+        if metricID < 1801:
+            continue
         print metricID
 
         # enter each search term in db separately
@@ -159,6 +163,9 @@ def insertMetrics(conn, c, attackID):
 
         addToDB(conn, c, metricID, attackID, queryType, query, numTweets, avgRetweets, avgFavorites, startQueryDate, endQueryDate)
 
+def processAttack(conn, c, attack):
+    attackID = attack[0]
+    insertMetrics(conn, c, attackID)
 
 def main():
     conn = sqlite3.connect('attacks.db')
@@ -171,6 +178,9 @@ def main():
     for attack in attackids:
         attackID = attack[0]
         insertMetrics(conn, c, attackID)
+
+    num_cores = multiprocessing.cpu_count()
+    Parallel(n_jobs=num_cores)(delayed(processAttack)(conn, c, attack) for attack in attackids)
 
     conn.commit()
     conn.close()
