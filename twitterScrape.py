@@ -1,7 +1,7 @@
 #https://github.com/Jefferson-Henrique/GetOldTweets-python
 import got
 
-import re
+import re, sys
 import sqlite3
 import datetime, time
 
@@ -88,18 +88,23 @@ def main():
         attackLocation = commaToOr(fields['attackLocation'])
         perpetratorExtended = commaToOr(perpetratorExtended)
 
-        type_location = combineTerms(attackType, attackLocation)
-        type_group = combineTerms(attackType, perpetratorExtended)
-        location_group = combineTerms(attackLocation, perpetratorExtended)
+        typeLocation = combineTerms(attackType, attackLocation)
+        typeGroup = combineTerms(attackType, perpetratorExtended)
+        locationGroup = combineTerms(attackLocation, perpetratorExtended)
 
-        searchQueries.append(type_location)
-        searchQueries.append(type_group)
-        searchQueries.append(location_group)
-
-        # general terms
-        searchQueries.append('terrorist attack')
+        searchQueries = {
+            "type and location"  : typeLocation,
+            "type and group"     : typeGroup,
+            "location and group" : locationGroup,
+            "general 1"          : "terrorist attack"
+        }
 
         return searchQueries
+
+    # Given a query, searches Twitter and returns
+    # numTweets, avgRetweets, avgFavorites
+    def searchTwitter(query):
+
 
     def insertMetrics(db, dbcursor, attack):
         #run intended twitter query with got lib
@@ -115,11 +120,17 @@ def main():
         if attack < 10 or attack == 606 or attack == 94:
             print searchQueries
 
-        # #tweetCriteria = got.manager.TweetCriteria().setQuerySearch(fields['searchTerms'])#.setSince(startQueryDate).setUntil(endQueryDate).setMaxTweets(100)
+        for queryType, query in searchQueries.items():
+            # enter each search term in db separately
+            numTweets, avgRetweets, avgFavorites = searchTwitter(query)
+            addToDB(queryType, query, numTweets, avgRetweets, avgFavorites)
+
+
+        # # tweetCriteria = got.manager.TweetCriteria().setQuerySearch(fields['searchTerms'])#.setSince(startQueryDate).setUntil(endQueryDate).setMaxTweets(100)
         # tweetCriteria = got.manager.TweetCriteria().setQuerySearch(fields['searchTerms']).setSince(startQueryDate).setUntil(endQueryDate).setMaxTweets(56)
         # tweets = got.manager.TweetManager.getTweets(tweetCriteria)
         #
-        # print tweets
+        # # print tweets
         #
         # numTweets = len(tweets)
         # avgRetweets = getAvgRetweets(tweets)
