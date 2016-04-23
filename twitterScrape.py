@@ -119,6 +119,24 @@ def main():
 
         return numTweets, avgRetweets, avgFavorites
 
+    # adds the given information to the twitter_metrics db
+    # returns if the addition was successful
+    def addToDB(c, conn, queryType, query, numTweets, avgRetweets, avgFavorites, startQueryDate, endQueryDate):
+        insert_sql = (
+            """INSERT INTO tweet_metrics (query_type, query, number_of_tweets, avg_retweets, avg_favorites, query_start, query_end)
+            VALUES (?, ?, ?, ?, ?, ?, ?)"""
+        )
+
+        data = (queryType, query, numTweets, avgRetweets, avgFavorites, startQueryDate, endQueryDate)
+
+        try:
+            c.execute(insert_sql, data)
+            conn.commit()
+        except sqlite3.Error as e:
+            print "Tweet Metrics Not Saved: ", e.args[0]
+            return False
+        return True
+
     def insertMetrics(db, dbcursor, attack):
         #run intended twitter query with got lib
         fields = getFields(dbcursor,attack)
