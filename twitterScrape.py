@@ -59,7 +59,6 @@ def main():
             "ISIS"  : "ISIS OR ISIL OR Islamic State"
         }
         if perpetrator in extended_name_dict:
-            print perpetrator
             return extended_name_dict[perpetrator]
         else:
             return perpetrator
