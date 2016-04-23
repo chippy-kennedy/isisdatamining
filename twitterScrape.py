@@ -62,6 +62,8 @@ def main():
     # given a term converts the commas to OR's
     # this is so twitters search knows to search for either of the terms
     def commaToOr(term):
+        if not term:
+            return ""
         return re.sub("( )*,( )*", " OR ", term)
 
     # combines terms for search on twitter
