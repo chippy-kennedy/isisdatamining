@@ -108,7 +108,7 @@ def getSearchQueries(fields):
 
 # Given a query, searches Twitter and returns
 # numTweets, avgRetweets, avgFavorites
-def searchTwitter(query):
+def searchTwitter(query, startQueryDate, endQueryDate):
     tweetCriteria = got.manager.TweetCriteria().setQuerySearch(query).setSince(startQueryDate).setUntil(endQueryDate).setMaxTweets(56)
     tweets = got.manager.TweetManager.getTweets(tweetCriteria)
 
