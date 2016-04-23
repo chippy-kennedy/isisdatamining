@@ -151,7 +151,7 @@ def insertMetrics(conn, c, attackID):
 
         for queryType, query in searchQueries.items():
             # enter each search term in db separately
-            numTweets, avgRetweets, avgFavorites = searchTwitter(query)
+            numTweets, avgRetweets, avgFavorites = searchTwitter(query, startQueryDate, endQueryDate)
             print numTweets, avgRetweets, avgFavorites
             # addToDB(conn, c, queryType, query, numTweets, avgRetweets, avgFavorites)
 
