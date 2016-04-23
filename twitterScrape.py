@@ -121,7 +121,7 @@ def searchTwitter(query, startQueryDate, endQueryDate):
 # returns if the addition was successful
 def addToDB(conn, c, metricID, attackID, queryType, query, numTweets, avgRetweets, avgFavorites, startQueryDate, endQueryDate):
     insert_sql = (
-        """INSERT INTO tweet_metrics (metric_id, attack_id, query_type, query, number_of_tweets, avg_retweets, avg_favorites, query_start, query_end)
+        """INSERT INTO twitter_metrics (metric_id, attack_id, query_type, query, number_of_tweets, avg_retweets, avg_favorites, query_start, query_end)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"""
     )
 
