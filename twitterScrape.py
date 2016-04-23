@@ -7,150 +7,150 @@ import datetime, time
 
 def main():
 
-	def printTweet(descr, t):
-		print descr
-		print "Username: %s" % t.username
-		print "Retweets: %d" % t.retweets
-		print "Text: %s" % t.text
-		print "Mentions: %s" % t.mentions
-		print "Hashtags: %s\n" % t.hashtags
+    def printTweet(descr, t):
+        print descr
+        print "Username: %s" % t.username
+        print "Retweets: %d" % t.retweets
+        print "Text: %s" % t.text
+        print "Mentions: %s" % t.mentions
+        print "Hashtags: %s\n" % t.hashtags
 
 
-	def getFields(cursor, attack):
-		cursor.execute('SELECT start_date, end_date, type, primary_location, perpetrator FROM attacks WHERE attack_id = ?;', (attack,))
-		allTerms = list(cursor.fetchone())
+    def getFields(cursor, attack):
+        cursor.execute('SELECT start_date, end_date, type, primary_location, perpetrator FROM attacks WHERE attack_id = ?;', (attack,))
+        allTerms = list(cursor.fetchone())
 
-		startDate 		= allTerms[0]
-		endDate 		= allTerms[1]
-		attackType 		= str(allTerms[2])
-		attackLocation 	= str(allTerms[3])
-		perpetrator 	= str(allTerms[4])
+        startDate         = allTerms[0]
+        endDate         = allTerms[1]
+        attackType         = str(allTerms[2])
+        attackLocation     = str(allTerms[3])
+        perpetrator     = str(allTerms[4])
 
-		fields = {
-			'startDate': startDate,
-			'endDate': endDate,
-			'attackType': attackType,
-			'attackLocation': attackLocation,
-			'perpetrator': perpetrator,
-		}
+        fields = {
+            'startDate': startDate,
+            'endDate': endDate,
+            'attackType': attackType,
+            'attackLocation': attackLocation,
+            'perpetrator': perpetrator,
+        }
 
-		return fields
+        return fields
 
-	def getAvgRetweets(tweets):
-		numTweets = len(tweets)
-		if numTweets <= 0:
-				return None
+    def getAvgRetweets(tweets):
+        numTweets = len(tweets)
+        if numTweets <= 0:
+                return None
 
-		# Pop pulls off first tweet so it doesn't affect average
-		firstTweet = tweets.pop(0)
-		totalRetweets = firstTweet.retweets
+        # Pop pulls off first tweet so it doesn't affect average
+        firstTweet = tweets.pop(0)
+        totalRetweets = firstTweet.retweets
 
-		for tweet in tweets:
-			totalRetweets += tweet.retweets
+        for tweet in tweets:
+            totalRetweets += tweet.retweets
 
-		return totalRetweets /  numTweets
+        return totalRetweets /  numTweets
 
-	# given a perpetratro returns a twitter search term
-	# with any additional names that the group go's by
-	# separated by OR for twitter search
-	def getExtendedPerpetrator(perpetrator):
-		extended_name_dict = {
-		    "PKK"   : "Kurdistan Workers' Party OR PKK",
-		    "ISIS"  : "ISIS OR ISIL OR Islamic State"
-		}
+    # given a perpetratro returns a twitter search term
+    # with any additional names that the group go's by
+    # separated by OR for twitter search
+    def getExtendedPerpetrator(perpetrator):
+        extended_name_dict = {
+            "PKK"   : "Kurdistan Workers' Party OR PKK",
+            "ISIS"  : "ISIS OR ISIL OR Islamic State"
+        }
 
-	# given a term converts the commas to OR's
-	# this is so twitters search knows to search for either of the terms
-	def commaToOr(term):
-		return e.sub("( )*,( )*", " OR ", term)
+    # given a term converts the commas to OR's
+    # this is so twitters search knows to search for either of the terms
+    def commaToOr(term):
+        return e.sub("( )*,( )*", " OR ", term)
 
-	# combines terms for search on twitter
-	# basically just adds AND between them
-	def combineTerms(term1, term2):
-		return str(term1)+' AND '+str(term2)
+    # combines terms for search on twitter
+    # basically just adds AND between them
+    def combineTerms(term1, term2):
+        return str(term1)+' AND '+str(term2)
 
-	# given a dictionary containing
-	# attackType, attackLocation, perpetrator
-	# returns a list of search terms for twitter
-	def getSearchQueries(fields):
-		searchQueries = []
+    # given a dictionary containing
+    # attackType, attackLocation, perpetrator
+    # returns a list of search terms for twitter
+    def getSearchQueries(fields):
+        searchQueries = []
 
-		# computed terms
-     	perpetratorExtended = getExtendedPerpetrator(fields['perpetrator'])
+        # computed terms
+         perpetratorExtended = getExtendedPerpetrator(fields['perpetrator'])
 
-		attackType = commaToOr(fields['attackType'])
-		attackLocation = commaToOr(fields['attackLocation'])
-		perpetratorExtended = commaToOr(perpetratorExtended)
+        attackType = commaToOr(fields['attackType'])
+        attackLocation = commaToOr(fields['attackLocation'])
+        perpetratorExtended = commaToOr(perpetratorExtended)
 
-		type_location = combineTerms(attackType, attackLocation)
-		type_group = combineTerms(attackType, perpetratorExtended)
-		location_group = combineTerms(attackLocation, perpetratorExtended)
+        type_location = combineTerms(attackType, attackLocation)
+        type_group = combineTerms(attackType, perpetratorExtended)
+        location_group = combineTerms(attackLocation, perpetratorExtended)
 
-		searchQueries.append(type_location)
-		searchQueries.append(type_group)
-		searchQueries.append(location_group)
+        searchQueries.append(type_location)
+        searchQueries.append(type_group)
+        searchQueries.append(location_group)
 
-		# general terms
-		searchQueries.append('terrorist attack')
+        # general terms
+        searchQueries.append('terrorist attack')
 
-		return searchQueries
+        return searchQueries
 
-	def insertMetrics(db, dbcursor, attack):
-		#run intended twitter query with got lib
-		fields = getFields(dbcursor,attack)
+    def insertMetrics(db, dbcursor, attack):
+        #run intended twitter query with got lib
+        fields = getFields(dbcursor,attack)
 
-		start_date = datetime.datetime.strptime(fields['startDate'], "%Y-%m-%d %H:%M:%S")
-		end_date = datetime.datetime.strptime(fields['endDate'], "%Y-%m-%d %H:%M:%S")
-		startQueryDate = start_date.strftime('%Y-%m-%d')
-		endQueryDate = (start_date + datetime.timedelta(days=1)).strftime('%Y-%m-%d')
+        start_date = datetime.datetime.strptime(fields['startDate'], "%Y-%m-%d %H:%M:%S")
+        end_date = datetime.datetime.strptime(fields['endDate'], "%Y-%m-%d %H:%M:%S")
+        startQueryDate = start_date.strftime('%Y-%m-%d')
+        endQueryDate = (start_date + datetime.timedelta(days=1)).strftime('%Y-%m-%d')
 
-		searchQueries = getSearchQueries(fields)
+        searchQueries = getSearchQueries(fields)
 
-		if attack < 10:
-			print searchQueries
+        if attack < 10 || attack = 606 || attack = 94:
+            print searchQueries
 
-		# #tweetCriteria = got.manager.TweetCriteria().setQuerySearch(fields['searchTerms'])#.setSince(startQueryDate).setUntil(endQueryDate).setMaxTweets(100)
-		# tweetCriteria = got.manager.TweetCriteria().setQuerySearch(fields['searchTerms']).setSince(startQueryDate).setUntil(endQueryDate).setMaxTweets(56)
-		# tweets = got.manager.TweetManager.getTweets(tweetCriteria)
-		#
-		# print tweets
-		#
-		# numTweets = len(tweets)
-		# avgRetweets = getAvgRetweets(tweets)
-		#
-		# print 'number of tweets: '+str(numTweets)
-		# print 'avg retweets: ' + str(avgRetweets)
-		#
-		# #delay for twitter
-		# time.sleep(10)
-		#
-		# insert_sql = (
-		# 	"INSERT INTO tweet_metrics (search_terms, attack_id, tweet_count, avg_retweets, start_date, end_date) "
-		# 	"VALUES (?, ?, ?, ?, ?, ?)"
-		# )
-		# data = (fields['searchTerms'], attack, numTweets, avgRetweets, startQueryDate, endQueryDate)
-		# try:
-		# 	dbcursor.execute(insert_sql, data)
-		# 	db.commit()
-		# except sqlite3.Error as e:
-		# 	print "Tweet Metrics Not Saved: ", e.args[0]
+        # #tweetCriteria = got.manager.TweetCriteria().setQuerySearch(fields['searchTerms'])#.setSince(startQueryDate).setUntil(endQueryDate).setMaxTweets(100)
+        # tweetCriteria = got.manager.TweetCriteria().setQuerySearch(fields['searchTerms']).setSince(startQueryDate).setUntil(endQueryDate).setMaxTweets(56)
+        # tweets = got.manager.TweetManager.getTweets(tweetCriteria)
+        #
+        # print tweets
+        #
+        # numTweets = len(tweets)
+        # avgRetweets = getAvgRetweets(tweets)
+        #
+        # print 'number of tweets: '+str(numTweets)
+        # print 'avg retweets: ' + str(avgRetweets)
+        #
+        # #delay for twitter
+        # time.sleep(10)
+        #
+        # insert_sql = (
+        #     "INSERT INTO tweet_metrics (search_terms, attack_id, tweet_count, avg_retweets, start_date, end_date) "
+        #     "VALUES (?, ?, ?, ?, ?, ?)"
+        # )
+        # data = (fields['searchTerms'], attack, numTweets, avgRetweets, startQueryDate, endQueryDate)
+        # try:
+        #     dbcursor.execute(insert_sql, data)
+        #     db.commit()
+        # except sqlite3.Error as e:
+        #     print "Tweet Metrics Not Saved: ", e.args[0]
 
 
-	#MAIN
-	db = sqlite3.connect('attacks.db')
-	db.text_factory = str
-	dbcursor = db.cursor()
+    #MAIN
+    db = sqlite3.connect('attacks.db')
+    db.text_factory = str
+    dbcursor = db.cursor()
 
-	dbcursor.execute("SELECT attack_id from attacks")
-	attackids = dbcursor.fetchall()
+    dbcursor.execute("SELECT attack_id from attacks")
+    attackids = dbcursor.fetchall()
 
-	for attack in attackids:
-		aid = attack[0]
-		insertMetrics(db, dbcursor, aid)
+    for attack in attackids:
+        aid = attack[0]
+        insertMetrics(db, dbcursor, aid)
 
-	db.commit()
-	db.close()
+    db.commit()
+    db.close()
 
 
 if __name__ == '__main__':
-	main()
+    main()
