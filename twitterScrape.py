@@ -62,7 +62,7 @@ def main():
     # given a term converts the commas to OR's
     # this is so twitters search knows to search for either of the terms
     def commaToOr(term):
-        return e.sub("( )*,( )*", " OR ", term)
+        return re.sub("( )*,( )*", " OR ", term)
 
     # combines terms for search on twitter
     # basically just adds AND between them
@@ -76,7 +76,7 @@ def main():
         searchQueries = []
 
         # computed terms
-         perpetratorExtended = getExtendedPerpetrator(fields['perpetrator'])
+        perpetratorExtended = getExtendedPerpetrator(fields['perpetrator'])
 
         attackType = commaToOr(fields['attackType'])
         attackLocation = commaToOr(fields['attackLocation'])
@@ -106,7 +106,7 @@ def main():
 
         searchQueries = getSearchQueries(fields)
 
-        if attack < 10 || attack = 606 || attack = 94:
+        if attack < 10 or attack == 606 or attack == 94:
             print searchQueries
 
         # #tweetCriteria = got.manager.TweetCriteria().setQuerySearch(fields['searchTerms'])#.setSince(startQueryDate).setUntil(endQueryDate).setMaxTweets(100)
