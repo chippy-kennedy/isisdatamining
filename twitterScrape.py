@@ -16,14 +16,14 @@ def main():
         print "Hashtags: %s\n" % t.hashtags
 
 
-    def getFields(cursor, attack):
-        cursor.execute('SELECT start_date, end_date, type, primary_location, perpetrator FROM attacks WHERE attack_id = ?;', (attack,))
+    def getFields(cursor, attackID):
+        cursor.execute('SELECT start_date, end_date, type, primary_location, perpetrator FROM attacks WHERE attack_id = ?;', (attackID,))
         allTerms = list(cursor.fetchone())
 
-        startDate         = allTerms[0]
+        startDate       = allTerms[0]
         endDate         = allTerms[1]
-        attackType         = str(allTerms[2])
-        attackLocation     = str(allTerms[3])
+        attackType      = str(allTerms[2])
+        attackLocation  = str(allTerms[3])
         perpetrator     = str(allTerms[4])
 
         fields = {
@@ -121,7 +121,7 @@ def main():
 
     # adds the given information to the twitter_metrics db
     # returns if the addition was successful
-    def addToDB(c, conn, queryType, query, numTweets, avgRetweets, avgFavorites, startQueryDate, endQueryDate):
+    def addToDB(conn, c, queryType, query, numTweets, avgRetweets, avgFavorites, startQueryDate, endQueryDate):
         insert_sql = (
             """INSERT INTO tweet_metrics (query_type, query, number_of_tweets, avg_retweets, avg_favorites, query_start, query_end)
             VALUES (?, ?, ?, ?, ?, ?, ?)"""
@@ -137,9 +137,9 @@ def main():
             return False
         return True
 
-    def insertMetrics(db, dbcursor, attack):
+    def insertMetrics(conn, c, attackID):
         #run intended twitter query with got lib
-        fields = getFields(dbcursor,attack)
+        fields = getFields(c,attackID)
 
         start_date = datetime.datetime.strptime(fields['startDate'], "%Y-%m-%d %H:%M:%S")
         end_date = datetime.datetime.strptime(fields['endDate'], "%Y-%m-%d %H:%M:%S")
@@ -148,13 +148,13 @@ def main():
 
         searchQueries = getSearchQueries(fields)
 
-        if attack < 10 or attack == 606 or attack == 94:
+        if attackID < 10 or attackID == 606 or attackID == 94:
             print searchQueries
 
         for queryType, query in searchQueries.items():
             # enter each search term in db separately
             numTweets, avgRetweets, avgFavorites = searchTwitter(query)
-            addToDB(queryType, query, numTweets, avgRetweets, avgFavorites)
+            addToDB(conn, c, queryType, query, numTweets, avgRetweets, avgFavorites)
 
 
         # # tweetCriteria = got.manager.TweetCriteria().setQuerySearch(fields['searchTerms'])#.setSince(startQueryDate).setUntil(endQueryDate).setMaxTweets(100)
@@ -185,19 +185,19 @@ def main():
 
 
     #MAIN
-    db = sqlite3.connect('attacks.db')
-    db.text_factory = str
-    dbcursor = db.cursor()
+    conn = sqlite3.connect('attacks.db')
+    conn.text_factory = str
+    c = conn.cursor()
 
-    dbcursor.execute("SELECT attack_id from attacks")
-    attackids = dbcursor.fetchall()
+    c.execute("SELECT attack_id from attacks")
+    attackids = c.fetchall()
 
     for attack in attackids:
-        aid = attack[0]
-        insertMetrics(db, dbcursor, aid)
+        attackID = attack[0]
+        insertMetrics(conn, c, attackID)
 
-    db.commit()
-    db.close()
+    conn.commit()
+    conn.close()
 
 
 if __name__ == '__main__':
