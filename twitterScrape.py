@@ -1,5 +1,7 @@
 #https://github.com/Jefferson-Henrique/GetOldTweets-python
 import got
+
+import re
 import sqlite3
 import datetime, time
 
@@ -48,6 +50,25 @@ def main():
 
 		return totalRetweets /  numTweets
 
+	# given a perpetratro returns a twitter search term
+	# with any additional names that the group go's by
+	# separated by OR for twitter search
+	def getExtendedPerpetrator(perpetrator):
+		extended_name_dict = {
+		    "PKK"   : "Kurdistan Workers' Party OR PKK",
+		    "ISIS"  : "ISIS OR ISIL OR Islamic State"
+		}
+
+	# given a term converts the commas to OR's
+	# this is so twitters search knows to search for either of the terms
+	def commaToOr(term):
+		return e.sub("( )*,( )*", " OR ", term)
+
+	# combines terms for search on twitter
+	# basically just adds AND between them
+	def combineTerms(term1, term2):
+		return str(term1)+' AND '+str(term2)
+
 	# given a dictionary containing
 	# attackType, attackLocation, perpetrator
 	# returns a list of search terms for twitter
@@ -55,9 +76,20 @@ def main():
 		searchQueries = []
 
 		# computed terms
-		searchQueries.append(fields['attackType']+' '+fields['attackLocation'])
-		searchQueries.append(fields['attackType']+' '+fields['perpetrator'])
-		searchQueries.append(fields['attackLocation']+' '+fields['perpetrator'])
+     	perpetratorExtended = getExtendedPerpetrator(fields['perpetrator'])
+
+		attackType = commaToOr(fields['attackType'])
+		attackLocation = commaToOr(fields['attackLocation'])
+		perpetratorExtended = commaToOr(perpetratorExtended)
+
+		type_location = combineTerms(attackType, attackLocation)
+		type_group = combineTerms(attackType, perpetratorExtended)
+		location_group = combineTerms(attackLocation, perpetratorExtended)
+
+		searchQueries.append(type_location)
+		searchQueries.append(type_group)
+		searchQueries.append(location_group)
+
 		# general terms
 		searchQueries.append('terrorist attack')
 
