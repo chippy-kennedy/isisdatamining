@@ -36,19 +36,26 @@ def main():
 
         return fields
 
-    def getAvgRetweets(tweets):
+    # given a list of tweets
+    # returns the paring avgRetweets, avgFavorites
+    def getSharingAverages(tweets):
         numTweets = len(tweets)
         if numTweets <= 0:
-                return None
+            return None
 
         # Pop pulls off first tweet so it doesn't affect average
         firstTweet = tweets.pop(0)
         totalRetweets = firstTweet.retweets
+        totalFavorites = firstTweet.favorites
 
         for tweet in tweets:
             totalRetweets += tweet.retweets
+            totalFavorites += tweet.favorites
 
-        return totalRetweets /  numTweets
+        avgRetweets = totalRetweets/numTweets
+        avgFavorites = totalFavorites/numTweets
+
+        return avgRetweets, avgFavorites
 
     # given a perpetratro returns a twitter search term
     # with any additional names that the group go's by
@@ -104,7 +111,11 @@ def main():
     # Given a query, searches Twitter and returns
     # numTweets, avgRetweets, avgFavorites
     def searchTwitter(query):
+        tweetCriteria = got.manager.TweetCriteria().setQuerySearch(fields['searchTerms']).setSince(startQueryDate).setUntil(endQueryDate).setMaxTweets(56)
+        tweets = got.manager.TweetManager.getTweets(tweetCriteria)
 
+        numTweets = len(tweets)
+        avgRetweets, avgFavorites = getSharingAverages(tweets)
 
     def insertMetrics(db, dbcursor, attack):
         #run intended twitter query with got lib
