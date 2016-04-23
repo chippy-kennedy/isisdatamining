@@ -109,7 +109,7 @@ def getSearchQueries(fields):
 # Given a query, searches Twitter and returns
 # numTweets, avgRetweets, avgFavorites
 def searchTwitter(query):
-    tweetCriteria = got.manager.TweetCriteria().setQuerySearch(fields['searchTerms']).setSince(startQueryDate).setUntil(endQueryDate).setMaxTweets(56)
+    tweetCriteria = got.manager.TweetCriteria().setQuerySearch(query).setSince(startQueryDate).setUntil(endQueryDate).setMaxTweets(56)
     tweets = got.manager.TweetManager.getTweets(tweetCriteria)
 
     numTweets = len(tweets)
