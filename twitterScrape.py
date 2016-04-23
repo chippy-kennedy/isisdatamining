@@ -154,8 +154,7 @@ def insertMetrics(conn, c, attackID):
         # within the current attack
         metricID = (attackID-1)*len(searchQueries)+queryCount
         queryCount+=1
-        if metricID < 1801:
-            continue
+
         print metricID
 
         # enter each search term in db separately
@@ -174,10 +173,6 @@ def main():
 
     c.execute("SELECT attack_id from attacks")
     attackids = c.fetchall()
-
-    for attack in attackids:
-        attackID = attack[0]
-        insertMetrics(conn, c, attackID)
 
     num_cores = multiprocessing.cpu_count()
     Parallel(n_jobs=num_cores)(delayed(processAttack)(conn, c, attack) for attack in attackids)
