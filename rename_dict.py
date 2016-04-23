@@ -98,7 +98,8 @@ translate_groups = {
     "Talibansuspected"                                      : "Taliban",
     "Wilayat Saynasuspected"                                : "Wilayat Sayna",
     "TBD"                                                   : "Unknown",
-    "Unknown"                                               : "Unknown terrorist"
+    "Unknown"                                               : "Unknown terrorist",
+    ""                                                      : "Uknown terrorist",
 }
 
 extended_name_list = {
