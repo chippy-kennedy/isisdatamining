@@ -142,7 +142,7 @@ def insertMetrics(conn, c, attackID):
     start_date = datetime.datetime.strptime(fields['startDate'], "%Y-%m-%d %H:%M:%S")
     end_date = datetime.datetime.strptime(fields['endDate'], "%Y-%m-%d %H:%M:%S")
     startQueryDate = start_date.strftime('%Y-%m-%d')
-    endQueryDate = (start_date + datetime.timedelta(days=1)).strftime('%Y-%m-%d')
+    endQueryDate = (end_date + datetime.timedelta(days=1)).strftime('%Y-%m-%d')
 
     searchQueries = getSearchQueries(fields)
 
