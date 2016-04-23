@@ -162,9 +162,18 @@ def insertMetrics(conn, c, attackID):
 
         addToDB(conn, c, metricID, attackID, queryType, query, numTweets, avgRetweets, avgFavorites, startQueryDate, endQueryDate)
 
-def processAttack(conn, c, attack):
+def processAttack(attack):
     attackID = attack[0]
+
+    # create new connection for multiprocessing
+    conn = sqlite3.connect('attacks.db')
+    conn.text_factory = str
+    c = conn.cursor()
+
     insertMetrics(conn, c, attackID)
+
+    conn.commit()
+    conn.close()
 
 def main():
     conn = sqlite3.connect('attacks.db')
@@ -174,16 +183,10 @@ def main():
     c.execute("SELECT attack_id from attacks")
     attackids = c.fetchall()
 
-    rerunFor = [288, 289, 300, 319, 412, 432, 434, 435, 438, 442, 445, 446, 449, 450]
-
-    for attack in attackids:
-        attackID = attack[0]
-        if attackID not in rerunFor:
-            continue
-        insertMetrics(conn, c, attackID)
-
+    # TODO: consider using sqlitedict to get support for multiprocessing
     # num_cores = multiprocessing.cpu_count()
-    # Parallel(n_jobs=num_cores)(delayed(processAttack)(conn, c, attack) for attack in attackids)
+    num_cores = 1
+    Parallel(n_jobs=num_cores)(delayed(processAttack)(attack) for attack in attackids)
 
     conn.commit()
     conn.close()
