@@ -117,6 +117,8 @@ def main():
         numTweets = len(tweets)
         avgRetweets, avgFavorites = getSharingAverages(tweets)
 
+        return numTweets, avgRetweets, avgFavorites
+
     def insertMetrics(db, dbcursor, attack):
         #run intended twitter query with got lib
         fields = getFields(dbcursor,attack)
